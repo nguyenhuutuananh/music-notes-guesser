@@ -8,13 +8,15 @@ Visit the live app: [https://nguyenhuutuananh.github.io/music-notes-guesser/](ht
 
 ## ✨ Features
 
+- **Bilingual Support**: Switch between English and Vietnamese with language persistence
 - Random note generation on the musical staff
 - Interactive note guessing with instant feedback
 - Score tracking (correct/incorrect answers)
 - Auto-advance to next note after correct answer
-- Vietnamese note names (Đô, Rê, Mi, Fa, Sol, La, Si)
+- Note names in both languages (C/Đô, D/Rê, E/Mi, F/Fa, G/Sol, A/La, B/Si)
 - Beautiful gradient UI design
 - Built with Vue 3 and TypeScript
+- Language preference saved in localStorage for future visits
 
 ## Recommended IDE Setup
 
@@ -125,6 +127,7 @@ The app is configured for GitHub Pages deployment with:
 - **Vue 3.5.22** - Progressive JavaScript Framework
 - **TypeScript** - Type-safe JavaScript
 - **Vite 7** - Next Generation Frontend Tooling
+- **Tailwind CSS 4** - Utility-first CSS framework
 - **Vue Router 4** - Official router for Vue.js
 - **Vitest** - Unit testing framework
 - **Playwright** - End-to-end testing

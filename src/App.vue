@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useLanguage } from './composables/useLanguage'
+import { translations } from './i18n/translations'
 
 interface Note {
   name: string
   position: number
 }
+
+// Language composable
+const { currentLanguage, toggleLanguage } = useLanguage()
+
+// Computed translations
+const t = computed(() => translations[currentLanguage.value])
 
 // Treble clef notes with their positions (percentage from top of staff)
 const notes: Note[] = [
@@ -42,14 +50,14 @@ const checkAnswer = (guess: string) => {
   if (!currentNote.value) return
 
   if (guess === currentNote.value.name) {
-    feedbackMessage.value = '✓ Correct!'
+    feedbackMessage.value = t.value.correct
     feedbackClass.value = 'correct'
     correctCount.value++
 
     // Auto-generate new note after a short delay
     setTimeout(() => newNote(), 1000)
   } else {
-    feedbackMessage.value = `✗ Wrong! It was ${currentNote.value.name}`
+    feedbackMessage.value = `${t.value.incorrect} ${t.value.wrongAnswer} ${currentNote.value.name}`
     feedbackClass.value = 'incorrect'
     incorrectCount.value++
   }
@@ -62,10 +70,21 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
-    <h1>🎵 Music Notes Guesser</h1>
+  <div class="bg-white p-10 pt-[60px] rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[600px] mx-auto relative">
+    <!-- Language Toggle Button -->
+    <button
+      class="absolute top-5 right-5 px-4 py-2 text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0"
+      @click="toggleLanguage"
+      :title="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
+    >
+      {{ currentLanguage === 'en' ? '🇻🇳 VI' : '🇬🇧 EN' }}
+    </button>
 
-    <div class="staff-container">
+    <!-- Title -->
+    <h1 class="text-[#333] m-0 mb-[30px] text-center text-3xl font-bold">{{ t.title }}</h1>
+
+    <!-- Staff Container -->
+    <div class="my-24 relative z-0">
       <div class="staff">
         <div class="clef">𝄞</div>
         <div class="staff-line" style="top: 0"></div>
@@ -79,55 +98,83 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="buttons">
-      <button @click="checkAnswer('C')">C<br /><small>Đô</small></button>
-      <button @click="checkAnswer('D')">D<br /><small>Rê</small></button>
-      <button @click="checkAnswer('E')">E<br /><small>Mi</small></button>
-      <button @click="checkAnswer('F')">F<br /><small>Fa</small></button>
-      <button @click="checkAnswer('G')">G<br /><small>Sol</small></button>
-      <button @click="checkAnswer('A')">A<br /><small>La</small></button>
-      <button @click="checkAnswer('B')">B<br /><small>Si</small></button>
+    <!-- Note Buttons -->
+    <div class="flex justify-center gap-2 flex-wrap my-5 relative z-10">
+      <button
+        @click="checkAnswer('C')"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+      >
+        C<br /><small class="text-xs">{{ t.notes.C }}</small>
+      </button>
+      <button
+        @click="checkAnswer('D')"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+      >
+        D<br /><small class="text-xs">{{ t.notes.D }}</small>
+      </button>
+      <button
+        @click="checkAnswer('E')"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+      >
+        E<br /><small class="text-xs">{{ t.notes.E }}</small>
+      </button>
+      <button
+        @click="checkAnswer('F')"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+      >
+        F<br /><small class="text-xs">{{ t.notes.F }}</small>
+      </button>
+      <button
+        @click="checkAnswer('G')"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+      >
+        G<br /><small class="text-xs">{{ t.notes.G }}</small>
+      </button>
+      <button
+        @click="checkAnswer('A')"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+      >
+        A<br /><small class="text-xs">{{ t.notes.A }}</small>
+      </button>
+      <button
+        @click="checkAnswer('B')"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+      >
+        B<br /><small class="text-xs">{{ t.notes.B }}</small>
+      </button>
     </div>
 
-    <div class="feedback" :class="feedbackClass">{{ feedbackMessage }}</div>
+    <!-- Feedback Message -->
+    <div
+      class="min-h-[30px] text-xl font-bold my-5 transition-all duration-300"
+      :class="{
+        'text-[#28a745] scale-110': feedbackClass === 'correct',
+        'text-[#dc3545] animate-shake': feedbackClass === 'incorrect'
+      }"
+    >
+      {{ feedbackMessage }}
+    </div>
 
-    <button class="new-note-btn" @click="newNote">New Note</button>
+    <!-- New Note Button -->
+    <button
+      class="px-8 py-3 text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg cursor-pointer transition-all duration-300 mb-5 hover:bg-[#e9ecef] hover:border-[#adb5bd] active:translate-y-0.5"
+      @click="newNote"
+    >
+      {{ t.newNote }}
+    </button>
 
-    <div class="score">
-      <p>Correct: <span>{{ correctCount }}</span> | Incorrect: <span>{{ incorrectCount }}</span></p>
+    <!-- Score -->
+    <div class="text-lg text-[#666]">
+      <p class="m-0">
+        {{ t.scoreCorrect }}: <span class="font-bold text-[#28a745]">{{ correctCount }}</span> |
+        {{ t.scoreIncorrect }}: <span class="font-bold text-[#dc3545]">{{ incorrectCount }}</span>
+      </p>
     </div>
   </div>
 </template>
 
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.container {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 30px;
-}
-
-.staff-container {
-  background: white;
-  padding: 40px 20px;
-  margin: 20px 0;
-  border-radius: 10px;
-  border: 2px solid #ddd;
-}
+/* Musical Staff Styles - Custom components that can't be easily replicated with Tailwind */
 
 .staff {
   position: relative;
@@ -146,11 +193,10 @@ h1 {
 
 .clef {
   position: absolute;
-  left: 10px;
-  top: 50%;
+  left: 0px;
+  top: 42%;
   transform: translateY(-50%);
-  font-size: 80px;
-  font-weight: bold;
+  font-size: 361px;
   color: #333;
 }
 
@@ -158,7 +204,7 @@ h1 {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 60px;
+  /* font-size: 60px; */
   color: #333;
 }
 
@@ -166,64 +212,34 @@ h1 {
   font-size: 50px;
 }
 
-.buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin: 20px 0;
+/* Shake animation for incorrect answers */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
-button {
-  padding: 15px 20px;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
-  background: #667eea;
-  color: white;
+.animate-shake {
+  animation: shake 0.5s;
 }
 
-button:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .staff {
+    width: 300px;
+    height: 120px;
+  }
 
-button:active {
-  transform: translateY(0);
-}
+  .clef {
+    font-size: 275px;
+  }
 
-.feedback {
-  margin-top: 20px;
-  font-size: 24px;
-  font-weight: bold;
-  min-height: 30px;
-}
+  .note {
+    font-size: 55px;
+  }
 
-.correct {
-  color: #10b981;
-}
-
-.incorrect {
-  color: #ef4444;
-}
-
-.score {
-  margin-top: 20px;
-  font-size: 18px;
-  color: #666;
-}
-
-.new-note-btn {
-  margin-top: 20px;
-  background: #10b981;
-  padding: 15px 40px;
-  font-size: 18px;
-}
-
-.new-note-btn:hover {
-  background: #059669;
+  .note-head {
+    font-size: 40px;
+  }
 }
 </style>
