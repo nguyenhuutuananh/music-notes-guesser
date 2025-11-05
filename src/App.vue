@@ -35,6 +35,7 @@ const correctCount = ref(0)
 const incorrectCount = ref(0)
 const feedbackMessage = ref('')
 const feedbackClass = ref('')
+const isProcessing = ref(false) // Track if buttons should be disabled
 
 const newNote = () => {
   // Pick a random note
@@ -44,10 +45,18 @@ const newNote = () => {
   // Clear feedback
   feedbackMessage.value = ''
   feedbackClass.value = ''
+
+  // Re-enable buttons when new note is generated
+  isProcessing.value = false
 }
 
 const checkAnswer = (guess: string) => {
-  if (!currentNote.value) return
+  const translatedCurrentNote = t.value.notes[currentNote.value!.name as keyof typeof t.value.notes]
+  // Prevent multiple clicks while processing
+  if (!currentNote.value || isProcessing.value) return
+
+  // Disable buttons immediately
+  isProcessing.value = true
 
   if (guess === currentNote.value.name) {
     feedbackMessage.value = t.value.correct
@@ -57,9 +66,14 @@ const checkAnswer = (guess: string) => {
     // Auto-generate new note after a short delay
     setTimeout(() => newNote(), 1000)
   } else {
-    feedbackMessage.value = `${t.value.incorrect} ${t.value.wrongAnswer} ${currentNote.value.name}`
+    feedbackMessage.value = `${t.value.incorrect} ${t.value.wrongAnswer} ${translatedCurrentNote !== currentNote.value.name ? translatedCurrentNote + '(' + currentNote.value.name + ')' : currentNote.value.name}`
     feedbackClass.value = 'incorrect'
     incorrectCount.value++
+
+    // Re-enable buttons after feedback animation completes
+    setTimeout(() => {
+      isProcessing.value = false
+    }, 1000)
   }
 }
 
@@ -102,43 +116,57 @@ onMounted(() => {
     <div class="flex justify-center gap-2 flex-wrap my-5 relative z-10">
       <button
         @click="checkAnswer('C')"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+        :disabled="isProcessing"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
       >
         C<br /><small class="text-xs">{{ t.notes.C }}</small>
       </button>
       <button
         @click="checkAnswer('D')"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+        :disabled="isProcessing"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
       >
         D<br /><small class="text-xs">{{ t.notes.D }}</small>
       </button>
       <button
         @click="checkAnswer('E')"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+        :disabled="isProcessing"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
       >
         E<br /><small class="text-xs">{{ t.notes.E }}</small>
       </button>
       <button
         @click="checkAnswer('F')"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+        :disabled="isProcessing"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
       >
         F<br /><small class="text-xs">{{ t.notes.F }}</small>
       </button>
       <button
         @click="checkAnswer('G')"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+        :disabled="isProcessing"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
       >
         G<br /><small class="text-xs">{{ t.notes.G }}</small>
       </button>
       <button
         @click="checkAnswer('A')"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+        :disabled="isProcessing"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
       >
         A<br /><small class="text-xs">{{ t.notes.A }}</small>
       </button>
       <button
         @click="checkAnswer('B')"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg cursor-pointer transition-all duration-300 hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0"
+        :disabled="isProcessing"
+        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
       >
         B<br /><small class="text-xs">{{ t.notes.B }}</small>
       </button>
@@ -157,8 +185,10 @@ onMounted(() => {
 
     <!-- New Note Button -->
     <button
-      class="px-8 py-3 text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg cursor-pointer transition-all duration-300 mb-5 hover:bg-[#e9ecef] hover:border-[#adb5bd] active:translate-y-0.5"
       @click="newNote"
+      :disabled="isProcessing"
+      class="px-8 py-3 text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg transition-all duration-300 mb-5"
+      :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#e9ecef] hover:border-[#adb5bd] active:translate-y-0.5'"
     >
       {{ t.newNote }}
     </button>
