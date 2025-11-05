@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useLanguage } from './composables/useLanguage'
-import { translations } from './i18n/translations'
+import { ref, onMounted, computed } from 'vue';
+import { useLanguage } from './composables/useLanguage';
+import { translations } from './i18n/translations';
 
 interface Note {
-  name: string
-  position: number
+  name: string;
+  position: number;
 }
 
 // Language composable
-const { currentLanguage, toggleLanguage } = useLanguage()
+const { currentLanguage, toggleLanguage } = useLanguage();
 
 // Computed translations
-const t = computed(() => translations[currentLanguage.value])
+const t = computed(() => translations[currentLanguage.value]);
 
 // Treble clef notes with their positions (percentage from top of staff)
 const notes: Note[] = [
@@ -27,64 +27,67 @@ const notes: Note[] = [
   { name: 'D', position: 0 }, // Top line - Rê
   { name: 'E', position: -12.5 }, // Above staff - Mi
   { name: 'F', position: -25 }, // Above staff - Fa
-  { name: 'G', position: -37.5 } // Above staff - Sol
-]
+  { name: 'G', position: -37.5 }, // Above staff - Sol
+];
 
-const currentNote = ref<Note | null>(null)
-const correctCount = ref(0)
-const incorrectCount = ref(0)
-const feedbackMessage = ref('')
-const feedbackClass = ref('')
-const isProcessing = ref(false) // Track if buttons should be disabled
+const currentNote = ref<Note | null>(null);
+const correctCount = ref(0);
+const incorrectCount = ref(0);
+const feedbackMessage = ref('');
+const feedbackClass = ref('');
+const isProcessing = ref(false); // Track if buttons should be disabled
 
 const newNote = () => {
   // Pick a random note
-  const randomIndex = Math.floor(Math.random() * notes.length)
-  currentNote.value = notes[randomIndex]!
+  const randomIndex = Math.floor(Math.random() * notes.length);
+  currentNote.value = notes[randomIndex]!;
 
   // Clear feedback
-  feedbackMessage.value = ''
-  feedbackClass.value = ''
+  feedbackMessage.value = '';
+  feedbackClass.value = '';
 
   // Re-enable buttons when new note is generated
-  isProcessing.value = false
-}
+  isProcessing.value = false;
+};
 
 const checkAnswer = (guess: string) => {
-  const translatedCurrentNote = t.value.notes[currentNote.value!.name as keyof typeof t.value.notes]
+  const translatedCurrentNote =
+    t.value.notes[currentNote.value!.name as keyof typeof t.value.notes];
   // Prevent multiple clicks while processing
-  if (!currentNote.value || isProcessing.value) return
+  if (!currentNote.value || isProcessing.value) return;
 
   // Disable buttons immediately
-  isProcessing.value = true
+  isProcessing.value = true;
 
   if (guess === currentNote.value.name) {
-    feedbackMessage.value = t.value.correct
-    feedbackClass.value = 'correct'
-    correctCount.value++
+    feedbackMessage.value = t.value.correct;
+    feedbackClass.value = 'correct';
+    correctCount.value++;
 
     // Auto-generate new note after a short delay
-    setTimeout(() => newNote(), 1000)
+    setTimeout(() => newNote(), 1000);
   } else {
-    feedbackMessage.value = `${t.value.incorrect} ${t.value.wrongAnswer} ${translatedCurrentNote !== currentNote.value.name ? translatedCurrentNote + '(' + currentNote.value.name + ')' : currentNote.value.name}`
-    feedbackClass.value = 'incorrect'
-    incorrectCount.value++
+    feedbackMessage.value = `${t.value.incorrect} ${t.value.wrongAnswer} ${translatedCurrentNote !== currentNote.value.name ? translatedCurrentNote + '(' + currentNote.value.name + ')' : currentNote.value.name}`;
+    feedbackClass.value = 'incorrect';
+    incorrectCount.value++;
 
     // Re-enable buttons after feedback animation completes
     setTimeout(() => {
-      isProcessing.value = false
-    }, 1000)
+      isProcessing.value = false;
+    }, 1000);
   }
-}
+};
 
 onMounted(() => {
   // Start with a random note
-  newNote()
-})
+  newNote();
+});
 </script>
 
 <template>
-  <div class="bg-white p-10 pt-[60px] rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[600px] mx-auto relative">
+  <div
+    class="bg-white p-10 pt-[60px] rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[600px] mx-auto relative"
+  >
     <!-- Language Toggle Button -->
     <button
       class="absolute top-5 right-5 px-4 py-2 text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0"
@@ -118,7 +121,11 @@ onMounted(() => {
         @click="checkAnswer('C')"
         :disabled="isProcessing"
         class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
+        :class="
+          isProcessing
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
+        "
       >
         C<br /><small class="text-xs">{{ t.notes.C }}</small>
       </button>
@@ -126,7 +133,11 @@ onMounted(() => {
         @click="checkAnswer('D')"
         :disabled="isProcessing"
         class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
+        :class="
+          isProcessing
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
+        "
       >
         D<br /><small class="text-xs">{{ t.notes.D }}</small>
       </button>
@@ -134,7 +145,11 @@ onMounted(() => {
         @click="checkAnswer('E')"
         :disabled="isProcessing"
         class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
+        :class="
+          isProcessing
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
+        "
       >
         E<br /><small class="text-xs">{{ t.notes.E }}</small>
       </button>
@@ -142,7 +157,11 @@ onMounted(() => {
         @click="checkAnswer('F')"
         :disabled="isProcessing"
         class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
+        :class="
+          isProcessing
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
+        "
       >
         F<br /><small class="text-xs">{{ t.notes.F }}</small>
       </button>
@@ -150,7 +169,11 @@ onMounted(() => {
         @click="checkAnswer('G')"
         :disabled="isProcessing"
         class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
+        :class="
+          isProcessing
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
+        "
       >
         G<br /><small class="text-xs">{{ t.notes.G }}</small>
       </button>
@@ -158,7 +181,11 @@ onMounted(() => {
         @click="checkAnswer('A')"
         :disabled="isProcessing"
         class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
+        :class="
+          isProcessing
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
+        "
       >
         A<br /><small class="text-xs">{{ t.notes.A }}</small>
       </button>
@@ -166,7 +193,11 @@ onMounted(() => {
         @click="checkAnswer('B')"
         :disabled="isProcessing"
         class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'"
+        :class="
+          isProcessing
+            ? 'opacity-50 cursor-not-allowed'
+            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
+        "
       >
         B<br /><small class="text-xs">{{ t.notes.B }}</small>
       </button>
@@ -177,7 +208,7 @@ onMounted(() => {
       class="min-h-[30px] text-xl font-bold my-5 transition-all duration-300"
       :class="{
         'text-[#28a745] scale-110': feedbackClass === 'correct',
-        'text-[#dc3545] animate-shake': feedbackClass === 'incorrect'
+        'text-[#dc3545] animate-shake': feedbackClass === 'incorrect',
       }"
     >
       {{ feedbackMessage }}
@@ -188,7 +219,11 @@ onMounted(() => {
       @click="newNote"
       :disabled="isProcessing"
       class="px-8 py-3 text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg transition-all duration-300 mb-5"
-      :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#e9ecef] hover:border-[#adb5bd] active:translate-y-0.5'"
+      :class="
+        isProcessing
+          ? 'opacity-50 cursor-not-allowed'
+          : 'cursor-pointer hover:bg-[#e9ecef] hover:border-[#adb5bd] active:translate-y-0.5'
+      "
     >
       {{ t.newNote }}
     </button>
@@ -244,9 +279,23 @@ onMounted(() => {
 
 /* Shake animation for incorrect answers */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
 }
 
 .animate-shake {

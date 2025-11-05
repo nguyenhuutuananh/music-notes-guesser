@@ -1,20 +1,20 @@
 export interface Translations {
-  title: string
-  newNote: string
-  correct: string
-  incorrect: string
-  wrongAnswer: string
-  scoreCorrect: string
-  scoreIncorrect: string
+  title: string;
+  newNote: string;
+  correct: string;
+  incorrect: string;
+  wrongAnswer: string;
+  scoreCorrect: string;
+  scoreIncorrect: string;
   notes: {
-    C: string
-    D: string
-    E: string
-    F: string
-    G: string
-    A: string
-    B: string
-  }
+    C: string;
+    D: string;
+    E: string;
+    F: string;
+    G: string;
+    A: string;
+    B: string;
+  };
 }
 
 export const translations: Record<'en' | 'vi', Translations> = {
@@ -33,8 +33,8 @@ export const translations: Record<'en' | 'vi', Translations> = {
       F: 'F',
       G: 'G',
       A: 'A',
-      B: 'B'
-    }
+      B: 'B',
+    },
   },
   vi: {
     title: '🎵 Đoán Nốt Nhạc',
@@ -51,8 +51,7 @@ export const translations: Record<'en' | 'vi', Translations> = {
       F: 'Fa',
       G: 'Sol',
       A: 'La',
-      B: 'Si'
-    }
-  }
-}
-
+      B: 'Si',
+    },
+  },
+};
