@@ -86,11 +86,11 @@ onMounted(() => {
 
 <template>
   <div
-    class="bg-white p-10 pt-[60px] rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[600px] mx-auto relative"
+    class="bg-white p-4 sm:p-6 md:p-10 pt-[50px] sm:pt-[60px] rounded-[12px] sm:rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[95vw] sm:max-w-[500px] md:max-w-[600px] mx-auto relative"
   >
     <!-- Language Toggle Button -->
     <button
-      class="absolute top-5 right-5 px-4 py-2 text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0"
+      class="absolute top-3 right-3 sm:top-5 sm:right-5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0"
       @click="toggleLanguage"
       :title="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
     >
@@ -98,10 +98,10 @@ onMounted(() => {
     </button>
 
     <!-- Title -->
-    <h1 class="text-[#333] m-0 mb-[30px] text-center text-3xl font-bold">{{ t.title }}</h1>
+    <h1 class="text-[#333] m-0 mb-4 sm:mb-6 md:mb-[30px] text-center text-xl sm:text-2xl md:text-3xl font-bold">{{ t.title }}</h1>
 
     <!-- Staff Container -->
-    <div class="my-24 relative z-0">
+    <div class="my-12 sm:my-16 md:my-24 relative z-0">
       <div class="staff">
         <div class="clef">𝄞</div>
         <div class="staff-line" style="top: 0"></div>
@@ -116,96 +116,96 @@ onMounted(() => {
     </div>
 
     <!-- Note Buttons -->
-    <div class="flex justify-center gap-2 flex-wrap my-5 relative z-10">
+    <div class="flex justify-center gap-1.5 sm:gap-2 flex-wrap my-3 sm:my-5 relative z-10">
       <button
         @click="checkAnswer('C')"
         :disabled="isProcessing"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        C<br /><small class="text-xs">{{ t.notes.C }}</small>
+        C<br /><small class="text-[10px] sm:text-xs">{{ t.notes.C }}</small>
       </button>
       <button
         @click="checkAnswer('D')"
         :disabled="isProcessing"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        D<br /><small class="text-xs">{{ t.notes.D }}</small>
+        D<br /><small class="text-[10px] sm:text-xs">{{ t.notes.D }}</small>
       </button>
       <button
         @click="checkAnswer('E')"
         :disabled="isProcessing"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        E<br /><small class="text-xs">{{ t.notes.E }}</small>
+        E<br /><small class="text-[10px] sm:text-xs">{{ t.notes.E }}</small>
       </button>
       <button
         @click="checkAnswer('F')"
         :disabled="isProcessing"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        F<br /><small class="text-xs">{{ t.notes.F }}</small>
+        F<br /><small class="text-[10px] sm:text-xs">{{ t.notes.F }}</small>
       </button>
       <button
         @click="checkAnswer('G')"
         :disabled="isProcessing"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        G<br /><small class="text-xs">{{ t.notes.G }}</small>
+        G<br /><small class="text-[10px] sm:text-xs">{{ t.notes.G }}</small>
       </button>
       <button
         @click="checkAnswer('A')"
         :disabled="isProcessing"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        A<br /><small class="text-xs">{{ t.notes.A }}</small>
+        A<br /><small class="text-[10px] sm:text-xs">{{ t.notes.A }}</small>
       </button>
       <button
         @click="checkAnswer('B')"
         :disabled="isProcessing"
-        class="px-5 py-3 text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        B<br /><small class="text-xs">{{ t.notes.B }}</small>
+        B<br /><small class="text-[10px] sm:text-xs">{{ t.notes.B }}</small>
       </button>
     </div>
 
     <!-- Feedback Message -->
     <div
-      class="min-h-[30px] text-xl font-bold my-5 transition-all duration-300"
+      class="min-h-[24px] sm:min-h-[30px] text-base sm:text-lg md:text-xl font-bold my-3 sm:my-4 md:my-5 transition-all duration-300"
       :class="{
         'text-[#28a745] scale-110': feedbackClass === 'correct',
         'text-[#dc3545] animate-shake': feedbackClass === 'incorrect',
@@ -218,7 +218,7 @@ onMounted(() => {
     <button
       @click="newNote"
       :disabled="isProcessing"
-      class="px-8 py-3 text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg transition-all duration-300 mb-5"
+      class="px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg transition-all duration-300 mb-3 sm:mb-4 md:mb-5"
       :class="
         isProcessing
           ? 'opacity-50 cursor-not-allowed'
@@ -229,7 +229,7 @@ onMounted(() => {
     </button>
 
     <!-- Score -->
-    <div class="text-lg text-[#666]">
+    <div class="text-sm sm:text-base md:text-lg text-[#666]">
       <p class="m-0">
         {{ t.scoreCorrect }}: <span class="font-bold text-[#28a745]">{{ correctCount }}</span> |
         {{ t.scoreIncorrect }}: <span class="font-bold text-[#dc3545]">{{ incorrectCount }}</span>
@@ -245,7 +245,8 @@ onMounted(() => {
   position: relative;
   height: 160px;
   margin: 40px auto;
-  width: 400px;
+  width: min(400px, 90vw);
+  max-width: 100%;
 }
 
 .staff-line {
@@ -263,18 +264,21 @@ onMounted(() => {
   transform: translateY(-50%);
   font-size: 361px;
   color: #333;
+  line-height: 1;
 }
 
 .note {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
-  /* font-size: 60px; */
+  transform: translate(-50%, -50%);
   color: #333;
+  line-height: 1;
 }
 
 .note-head {
   font-size: 50px;
+  display: inline-block;
+  line-height: 1;
 }
 
 /* Shake animation for incorrect answers */
@@ -302,23 +306,73 @@ onMounted(() => {
   animation: shake 0.5s;
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
+/* Responsive adjustments for mobile devices (< 640px) */
+@media (max-width: 639px) {
   .staff {
-    width: 300px;
-    height: 120px;
+    width: min(280px, 85vw);
+    height: 112px;
+    margin: 30px auto;
   }
 
   .clef {
-    font-size: 275px;
-  }
-
-  .note {
-    font-size: 55px;
+    font-size: 252px;
+    left: -2px;
   }
 
   .note-head {
-    font-size: 40px;
+    font-size: 35px;
+  }
+}
+
+/* Responsive adjustments for small tablets (640px - 767px) */
+@media (min-width: 640px) and (max-width: 767px) {
+  .staff {
+    width: min(340px, 88vw);
+    height: 136px;
+    margin: 35px auto;
+  }
+
+  .clef {
+    font-size: 306px;
+  }
+
+  .note-head {
+    font-size: 42px;
+  }
+}
+
+/* Responsive adjustments for tablets (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .staff {
+    width: min(380px, 90vw);
+    height: 152px;
+    margin: 38px auto;
+  }
+
+  .clef {
+    font-size: 342px;
+  }
+
+  .note-head {
+    font-size: 47px;
+  }
+}
+
+/* Ensure proper scaling on very small screens */
+@media (max-width: 374px) {
+  .staff {
+    width: min(240px, 80vw);
+    height: 96px;
+    margin: 25px auto;
+  }
+
+  .clef {
+    font-size: 216px;
+    left: -3px;
+  }
+
+  .note-head {
+    font-size: 30px;
   }
 }
 </style>
