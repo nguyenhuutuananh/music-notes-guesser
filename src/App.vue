@@ -160,20 +160,23 @@ onMounted(() => {
 
 <template>
   <div
-    class="bg-white p-4 sm:p-6 md:p-10 pt-[50px] sm:pt-[60px] rounded-[12px] sm:rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[95vw] sm:max-w-[500px] md:max-w-[600px] mx-auto relative"
+    class="bg-white p-4 sm:p-6 md:p-10 rounded-[12px] sm:rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.2)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.3)] text-center max-w-[95vw] sm:max-w-[500px] md:max-w-[600px] mx-auto relative"
   >
-    <!-- Language Toggle Button -->
-    <button
-      class="absolute top-3 right-3 sm:top-5 sm:right-5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:ring-offset-2"
-      @click="toggleLanguage"
-      :title="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
-      :aria-label="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
-    >
-      {{ currentLanguage === 'en' ? '🇻🇳 VI' : '🇬🇧 EN' }}
-    </button>
-
-    <!-- Title -->
-    <h1 class="text-[#333] m-0 mb-4 sm:mb-6 md:mb-[30px] text-center text-xl sm:text-2xl md:text-3xl font-bold">{{ t.title }}</h1>
+    <!-- Header with Language Toggle -->
+    <div class="flex items-start justify-between gap-2 mb-4 sm:mb-6 md:mb-[30px]">
+      <!-- Title -->
+      <h1 class="text-[#333] m-0 text-lg sm:text-2xl md:text-3xl font-bold flex-1 text-left sm:text-center sm:pr-20 md:pr-24">{{ t.title }}</h1>
+      
+      <!-- Language Toggle Button -->
+      <button
+        class="shrink-0 px-2 py-1 sm:px-4 sm:py-2 text-[10px] sm:text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:ring-offset-2"
+        @click="toggleLanguage"
+        :title="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
+        :aria-label="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
+      >
+        {{ currentLanguage === 'en' ? '🇻🇳 VI' : '🇬🇧 EN' }}
+      </button>
+    </div>
 
     <!-- Clef Toggle -->
     <div class="flex justify-center gap-2 mb-4 sm:mb-6" role="group" aria-label="Clef selection">
@@ -306,6 +309,7 @@ onMounted(() => {
   margin: 40px auto;
   width: min(400px, 90vw);
   max-width: 100%;
+  overflow: visible;
 }
 
 .staff-line {
@@ -435,7 +439,7 @@ onMounted(() => {
   }
 
   .ledger-line {
-    width: 50px;
+    width: 52px;
   }
 }
 
@@ -458,12 +462,12 @@ onMounted(() => {
   }
 
   .note-head {
-    width: 35px;
-    height: 26px;
+    width: 36px;
+    height: 27px;
   }
 
   .ledger-line {
-    width: 55px;
+    width: 58px;
   }
 }
 
