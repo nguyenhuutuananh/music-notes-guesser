@@ -8,27 +8,64 @@ interface Note {
   position: number;
 }
 
+type ClefType = 'treble' | 'bass';
+
 // Language composable
 const { currentLanguage, toggleLanguage } = useLanguage();
 
 // Computed translations
 const t = computed(() => translations[currentLanguage.value]);
 
+// Current clef type
+const currentClef = ref<ClefType>('treble');
+
 // Treble clef notes with their positions (percentage from top of staff)
-const notes: Note[] = [
-  { name: 'C', position: 100 }, // Bottom line - Đô
-  { name: 'D', position: 87.5 }, // Between lines - Rê
-  { name: 'E', position: 75 }, // 4th line - Mi
-  { name: 'F', position: 62.5 }, // Between lines - Fa
-  { name: 'G', position: 50 }, // 3rd line (middle) - Sol
-  { name: 'A', position: 37.5 }, // Between lines - La
-  { name: 'B', position: 25 }, // 2nd line - Si
-  { name: 'C', position: 12.5 }, // Between lines - Đô
-  { name: 'D', position: 0 }, // Top line - Rê
-  { name: 'E', position: -12.5 }, // Above staff - Mi
-  { name: 'F', position: -25 }, // Above staff - Fa
-  { name: 'G', position: -37.5 }, // Above staff - Sol
+// Staff lines: 0% = top (F5), 25% = D5, 50% = B4, 75% = G4, 100% = bottom (E4)
+const trebleNotes: Note[] = [
+  // Notes below the staff (need ledger lines)
+  { name: 'C', position: 125 }, // Ledger line below - Middle C (C4)
+  { name: 'D', position: 112.5 }, // Space below staff - D4
+  // Notes on the staff
+  { name: 'E', position: 100 }, // Bottom line (1st) - E4
+  { name: 'F', position: 87.5 }, // Space - F4
+  { name: 'G', position: 75 }, // 2nd line - G4
+  { name: 'A', position: 62.5 }, // Space - A4
+  { name: 'B', position: 50 }, // Middle line (3rd) - B4
+  { name: 'C', position: 37.5 }, // Space - C5
+  { name: 'D', position: 25 }, // 4th line - D5
+  { name: 'E', position: 12.5 }, // Space - E5
+  { name: 'F', position: 0 }, // Top line (5th) - F5
+  // Notes above the staff (need ledger lines)
+  { name: 'G', position: -12.5 }, // Space above - G5
+  { name: 'A', position: -25 }, // Ledger line above - A5
 ];
+
+// Bass clef notes with their positions (percentage from top of staff)
+// Staff lines: 0% = top (A3), 25% = F3, 50% = D3, 75% = B2, 100% = bottom (G2)
+const bassNotes: Note[] = [
+  // Notes below the staff (need ledger lines)
+  { name: 'E', position: 125 }, // Ledger line below - E2
+  { name: 'F', position: 112.5 }, // Space below staff - F2
+  // Notes on the staff
+  { name: 'G', position: 100 }, // Bottom line (1st) - G2
+  { name: 'A', position: 87.5 }, // Space - A2
+  { name: 'B', position: 75 }, // 2nd line - B2
+  { name: 'C', position: 62.5 }, // Space - C3
+  { name: 'D', position: 50 }, // Middle line (3rd) - D3
+  { name: 'E', position: 37.5 }, // Space - E3
+  { name: 'F', position: 25 }, // 4th line - F3
+  { name: 'G', position: 12.5 }, // Space - G3
+  { name: 'A', position: 0 }, // Top line (5th) - A3
+  // Notes above the staff (need ledger lines)
+  { name: 'B', position: -12.5 }, // Space above - B3
+  { name: 'C', position: -25 }, // Ledger line above - Middle C (C4)
+];
+
+// Get current notes based on clef type
+const notes = computed(() => currentClef.value === 'treble' ? trebleNotes : bassNotes);
+
+// Clef symbol based on current clef type
+const clefSymbol = computed(() => currentClef.value === 'treble' ? '𝄞' : '𝄢');
 
 const currentNote = ref<Note | null>(null);
 const correctCount = ref(0);
@@ -38,9 +75,10 @@ const feedbackClass = ref('');
 const isProcessing = ref(false); // Track if buttons should be disabled
 
 const newNote = () => {
-  // Pick a random note
-  const randomIndex = Math.floor(Math.random() * notes.length);
-  currentNote.value = notes[randomIndex]!;
+  // Pick a random note from the current clef's notes
+  const currentNotes = notes.value;
+  const randomIndex = Math.floor(Math.random() * currentNotes.length);
+  currentNote.value = currentNotes[randomIndex]!;
 
   // Clear feedback
   feedbackMessage.value = '';
@@ -48,6 +86,13 @@ const newNote = () => {
 
   // Re-enable buttons when new note is generated
   isProcessing.value = false;
+};
+
+const setClef = (clef: ClefType) => {
+  if (currentClef.value !== clef) {
+    currentClef.value = clef;
+    newNote(); // Generate a new note for the new clef
+  }
 };
 
 const checkAnswer = (guess: string) => {
@@ -100,10 +145,33 @@ onMounted(() => {
     <!-- Title -->
     <h1 class="text-[#333] m-0 mb-4 sm:mb-6 md:mb-[30px] text-center text-xl sm:text-2xl md:text-3xl font-bold">{{ t.title }}</h1>
 
+    <!-- Clef Toggle -->
+    <div class="flex justify-center gap-2 mb-4 sm:mb-6">
+      <button
+        @click="setClef('treble')"
+        class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-300 border-2"
+        :class="currentClef === 'treble' 
+          ? 'bg-[#667eea] text-white border-[#667eea]' 
+          : 'bg-white text-[#667eea] border-[#667eea] hover:bg-[#667eea] hover:text-white'"
+      >
+        𝄞 {{ t.trebleClef }}
+      </button>
+      <button
+        @click="setClef('bass')"
+        class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-300 border-2"
+        :class="currentClef === 'bass' 
+          ? 'bg-[#667eea] text-white border-[#667eea]' 
+          : 'bg-white text-[#667eea] border-[#667eea] hover:bg-[#667eea] hover:text-white'"
+      >
+        𝄢 {{ t.bassClef }}
+      </button>
+    </div>
+
     <!-- Staff Container -->
     <div class="my-12 sm:my-16 md:my-24 relative z-0">
       <div class="staff">
-        <div class="clef">𝄞</div>
+        <div class="clef" :class="currentClef === 'bass' ? 'bass-clef' : ''">{{ clefSymbol }}</div>
+        <!-- Main staff lines -->
         <div class="staff-line" style="top: 0"></div>
         <div class="staff-line" style="top: 25%"></div>
         <div class="staff-line" style="top: 50%"></div>
@@ -267,6 +335,12 @@ onMounted(() => {
   line-height: 1;
 }
 
+.clef.bass-clef {
+  font-size: 140px;
+  top: 28%;
+  left: 5px;
+}
+
 .note {
   position: absolute;
   left: 50%;
@@ -319,6 +393,12 @@ onMounted(() => {
     left: -2px;
   }
 
+  .clef.bass-clef {
+    font-size: 98px;
+    top: 28%;
+    left: 3px;
+  }
+
   .note-head {
     font-size: 35px;
   }
@@ -334,6 +414,12 @@ onMounted(() => {
 
   .clef {
     font-size: 306px;
+  }
+
+  .clef.bass-clef {
+    font-size: 119px;
+    top: 28%;
+    left: 4px;
   }
 
   .note-head {
@@ -353,6 +439,12 @@ onMounted(() => {
     font-size: 342px;
   }
 
+  .clef.bass-clef {
+    font-size: 133px;
+    top: 28%;
+    left: 4px;
+  }
+
   .note-head {
     font-size: 47px;
   }
@@ -369,6 +461,12 @@ onMounted(() => {
   .clef {
     font-size: 216px;
     left: -3px;
+  }
+
+  .clef.bass-clef {
+    font-size: 84px;
+    top: 28%;
+    left: 2px;
   }
 
   .note-head {
