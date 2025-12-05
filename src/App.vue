@@ -95,7 +95,8 @@ const ledgerLines = computed(() => {
       lines.push(p);
     }
     // Special case for D4 (112.5) which is in a space but needs the Middle C ledger line
-    if (position === 112.5) {
+    // Only applies to treble clef, not bass clef
+    if (position === 112.5 && currentClef.value === 'treble') {
       lines.push(125);
     }
   }
@@ -401,7 +402,6 @@ onMounted(() => {
 
   .clef.bass-clef {
     font-size: 98px;
-    top: 28%;
     left: 3px;
   }
 
@@ -429,7 +429,6 @@ onMounted(() => {
 
   .clef.bass-clef {
     font-size: 119px;
-    top: 28%;
     left: 4px;
   }
 
@@ -457,7 +456,6 @@ onMounted(() => {
 
   .clef.bass-clef {
     font-size: 133px;
-    top: 28%;
     left: 4px;
   }
 
@@ -486,7 +484,6 @@ onMounted(() => {
 
   .clef.bass-clef {
     font-size: 84px;
-    top: 28%;
     left: 2px;
   }
 
