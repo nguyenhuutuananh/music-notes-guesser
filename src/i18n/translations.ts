@@ -6,6 +6,9 @@ export interface Translations {
   wrongAnswer: string;
   scoreCorrect: string;
   scoreIncorrect: string;
+  trebleClef: string;
+  bassClef: string;
+  selectNote: string;
   notes: {
     C: string;
     D: string;
@@ -26,6 +29,9 @@ export const translations: Record<'en' | 'vi', Translations> = {
     wrongAnswer: 'It was',
     scoreCorrect: 'Correct',
     scoreIncorrect: 'Incorrect',
+    trebleClef: 'Treble',
+    bassClef: 'Bass',
+    selectNote: 'Select a note',
     notes: {
       C: 'C',
       D: 'D',
@@ -44,6 +50,9 @@ export const translations: Record<'en' | 'vi', Translations> = {
     wrongAnswer: 'Đáp án là',
     scoreCorrect: 'Đúng',
     scoreIncorrect: 'Sai',
+    trebleClef: 'Khóa Sol',
+    bassClef: 'Khóa Fa',
+    selectNote: 'Chọn một nốt nhạc',
     notes: {
       C: 'Đô',
       D: 'Rê',
