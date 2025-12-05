@@ -74,6 +74,35 @@ const feedbackMessage = ref('');
 const feedbackClass = ref('');
 const isProcessing = ref(false); // Track if buttons should be disabled
 
+// Note names for button rendering
+const noteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
+
+// Compute ledger lines needed for the current note (scalable for any note range)
+const ledgerLines = computed(() => {
+  if (!currentNote.value) return [];
+  const { position } = currentNote.value;
+  const lines: number[] = [];
+
+  // Add ledger lines above the staff (for notes like A5, C6, etc.)
+  for (let p = -25; p >= position; p -= 25) {
+    lines.push(p);
+  }
+
+  // Add ledger lines below the staff
+  if (position >= 112.5) {
+    // Add ledger lines for notes on lines (C4, A3, etc.)
+    for (let p = 125; p <= position; p += 25) {
+      lines.push(p);
+    }
+    // Special case for D4 (112.5) which is in a space but needs the Middle C ledger line
+    if (position === 112.5) {
+      lines.push(125);
+    }
+  }
+
+  return lines;
+});
+
 const newNote = () => {
   // Pick a random note from the current clef's notes
   const currentNotes = notes.value;
@@ -135,9 +164,10 @@ onMounted(() => {
   >
     <!-- Language Toggle Button -->
     <button
-      class="absolute top-3 right-3 sm:top-5 sm:right-5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0"
+      class="absolute top-3 right-3 sm:top-5 sm:right-5 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold border-2 border-[#667eea] rounded-lg cursor-pointer bg-white text-[#667eea] transition-all duration-300 whitespace-nowrap z-10 hover:bg-[#667eea] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(102,126,234,0.3)] active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:ring-offset-2"
       @click="toggleLanguage"
       :title="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
+      :aria-label="currentLanguage === 'en' ? 'Switch to Vietnamese' : 'Chuyển sang Tiếng Anh'"
     >
       {{ currentLanguage === 'en' ? '🇻🇳 VI' : '🇬🇧 EN' }}
     </button>
@@ -146,10 +176,12 @@ onMounted(() => {
     <h1 class="text-[#333] m-0 mb-4 sm:mb-6 md:mb-[30px] text-center text-xl sm:text-2xl md:text-3xl font-bold">{{ t.title }}</h1>
 
     <!-- Clef Toggle -->
-    <div class="flex justify-center gap-2 mb-4 sm:mb-6">
+    <div class="flex justify-center gap-2 mb-4 sm:mb-6" role="group" aria-label="Clef selection">
       <button
         @click="setClef('treble')"
-        class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-300 border-2"
+        :aria-pressed="currentClef === 'treble'"
+        :aria-label="`${t.trebleClef} clef`"
+        class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-300 border-2 focus:outline-none focus:ring-2 focus:ring-[#764ba2] focus:ring-offset-2"
         :class="currentClef === 'treble' 
           ? 'bg-[#667eea] text-white border-[#667eea]' 
           : 'bg-white text-[#667eea] border-[#667eea] hover:bg-[#667eea] hover:text-white'"
@@ -158,7 +190,9 @@ onMounted(() => {
       </button>
       <button
         @click="setClef('bass')"
-        class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-300 border-2"
+        :aria-pressed="currentClef === 'bass'"
+        :aria-label="`${t.bassClef} clef`"
+        class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-lg transition-all duration-300 border-2 focus:outline-none focus:ring-2 focus:ring-[#764ba2] focus:ring-offset-2"
         :class="currentClef === 'bass' 
           ? 'bg-[#667eea] text-white border-[#667eea]' 
           : 'bg-white text-[#667eea] border-[#667eea] hover:bg-[#667eea] hover:text-white'"
@@ -168,116 +202,68 @@ onMounted(() => {
     </div>
 
     <!-- Staff Container -->
-    <div class="my-12 sm:my-16 md:my-24 relative z-0">
+    <div 
+      class="my-12 sm:my-16 md:my-24 relative z-0"
+      role="img"
+      :aria-label="`Musical staff showing a note. ${currentClef === 'treble' ? 'Treble' : 'Bass'} clef.`"
+    >
       <div class="staff">
-        <div class="clef" :class="currentClef === 'bass' ? 'bass-clef' : ''">{{ clefSymbol }}</div>
+        <div class="clef" :class="currentClef === 'bass' ? 'bass-clef' : ''" aria-hidden="true">{{ clefSymbol }}</div>
         <!-- Main staff lines -->
-        <div class="staff-line" style="top: 0"></div>
-        <div class="staff-line" style="top: 25%"></div>
-        <div class="staff-line" style="top: 50%"></div>
-        <div class="staff-line" style="top: 75%"></div>
-        <div class="staff-line" style="top: 100%"></div>
+        <div class="staff-line" style="top: 0" aria-hidden="true"></div>
+        <div class="staff-line" style="top: 25%" aria-hidden="true"></div>
+        <div class="staff-line" style="top: 50%" aria-hidden="true"></div>
+        <div class="staff-line" style="top: 75%" aria-hidden="true"></div>
+        <div class="staff-line" style="top: 100%" aria-hidden="true"></div>
+        <!-- Ledger lines for notes above/below staff -->
+        <div 
+          v-for="line in ledgerLines" 
+          :key="line" 
+          class="ledger-line" 
+          :style="{ top: line + '%' }"
+          aria-hidden="true"
+        ></div>
+        <!-- Note head (CSS ellipse, no character) -->
         <div class="note" :style="{ top: currentNote ? currentNote.position + '%' : '50%' }">
-          <span class="note-head">●</span>
+          <span class="note-head" aria-hidden="true"></span>
         </div>
       </div>
     </div>
 
     <!-- Note Buttons -->
-    <div class="flex justify-center gap-1.5 sm:gap-2 flex-wrap my-3 sm:my-5 relative z-10">
+    <div 
+      class="flex justify-center gap-1.5 sm:gap-2 flex-wrap my-3 sm:my-5 relative z-10"
+      role="group"
+      :aria-label="t.selectNote || 'Select a note'"
+    >
       <button
-        @click="checkAnswer('C')"
+        v-for="note in noteNames"
+        :key="note"
+        @click="checkAnswer(note)"
         :disabled="isProcessing"
-        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
+        :aria-label="`${note} - ${t.notes[note]}`"
+        :aria-pressed="false"
+        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#764ba2] focus:ring-offset-2"
         :class="
           isProcessing
             ? 'opacity-50 cursor-not-allowed'
             : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
         "
       >
-        C<br /><small class="text-[10px] sm:text-xs">{{ t.notes.C }}</small>
-      </button>
-      <button
-        @click="checkAnswer('D')"
-        :disabled="isProcessing"
-        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="
-          isProcessing
-            ? 'opacity-50 cursor-not-allowed'
-            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
-        "
-      >
-        D<br /><small class="text-[10px] sm:text-xs">{{ t.notes.D }}</small>
-      </button>
-      <button
-        @click="checkAnswer('E')"
-        :disabled="isProcessing"
-        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="
-          isProcessing
-            ? 'opacity-50 cursor-not-allowed'
-            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
-        "
-      >
-        E<br /><small class="text-[10px] sm:text-xs">{{ t.notes.E }}</small>
-      </button>
-      <button
-        @click="checkAnswer('F')"
-        :disabled="isProcessing"
-        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="
-          isProcessing
-            ? 'opacity-50 cursor-not-allowed'
-            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
-        "
-      >
-        F<br /><small class="text-[10px] sm:text-xs">{{ t.notes.F }}</small>
-      </button>
-      <button
-        @click="checkAnswer('G')"
-        :disabled="isProcessing"
-        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="
-          isProcessing
-            ? 'opacity-50 cursor-not-allowed'
-            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
-        "
-      >
-        G<br /><small class="text-[10px] sm:text-xs">{{ t.notes.G }}</small>
-      </button>
-      <button
-        @click="checkAnswer('A')"
-        :disabled="isProcessing"
-        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="
-          isProcessing
-            ? 'opacity-50 cursor-not-allowed'
-            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
-        "
-      >
-        A<br /><small class="text-[10px] sm:text-xs">{{ t.notes.A }}</small>
-      </button>
-      <button
-        @click="checkAnswer('B')"
-        :disabled="isProcessing"
-        class="px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 text-base sm:text-lg font-bold bg-[#667eea] text-white border-none rounded-lg transition-all duration-300"
-        :class="
-          isProcessing
-            ? 'opacity-50 cursor-not-allowed'
-            : 'cursor-pointer hover:bg-[#764ba2] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(102,126,234,0.4)] active:translate-y-0'
-        "
-      >
-        B<br /><small class="text-[10px] sm:text-xs">{{ t.notes.B }}</small>
+        {{ note }}<br /><small class="text-[10px] sm:text-xs">{{ t.notes[note] }}</small>
       </button>
     </div>
 
-    <!-- Feedback Message -->
+    <!-- Feedback Message (aria-live for screen readers) -->
     <div
       class="min-h-[24px] sm:min-h-[30px] text-base sm:text-lg md:text-xl font-bold my-3 sm:my-4 md:my-5 transition-all duration-300"
       :class="{
         'text-[#28a745] scale-110': feedbackClass === 'correct',
         'text-[#dc3545] animate-shake': feedbackClass === 'incorrect',
       }"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
     >
       {{ feedbackMessage }}
     </div>
@@ -286,7 +272,8 @@ onMounted(() => {
     <button
       @click="newNote"
       :disabled="isProcessing"
-      class="px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg transition-all duration-300 mb-3 sm:mb-4 md:mb-5"
+      :aria-label="t.newNote"
+      class="px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base font-bold bg-[#f8f9fa] text-[#333] border-2 border-[#dee2e6] rounded-lg transition-all duration-300 mb-3 sm:mb-4 md:mb-5 focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:ring-offset-2"
       :class="
         isProcessing
           ? 'opacity-50 cursor-not-allowed'
@@ -297,7 +284,11 @@ onMounted(() => {
     </button>
 
     <!-- Score -->
-    <div class="text-sm sm:text-base md:text-lg text-[#666]">
+    <div 
+      class="text-sm sm:text-base md:text-lg text-[#666]"
+      role="status"
+      :aria-label="`${t.scoreCorrect}: ${correctCount}, ${t.scoreIncorrect}: ${incorrectCount}`"
+    >
       <p class="m-0">
         {{ t.scoreCorrect }}: <span class="font-bold text-[#28a745]">{{ correctCount }}</span> |
         {{ t.scoreIncorrect }}: <span class="font-bold text-[#dc3545]">{{ incorrectCount }}</span>
@@ -345,14 +336,25 @@ onMounted(() => {
   position: absolute;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #333;
   line-height: 1;
 }
 
 .note-head {
-  font-size: 50px;
-  display: inline-block;
-  line-height: 1;
+  display: block;
+  width: 38px;
+  height: 28px;
+  background: #333;
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
+
+.ledger-line {
+  position: absolute;
+  width: 60px;
+  height: 2px;
+  background: #333;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Shake animation for incorrect answers */
@@ -400,7 +402,12 @@ onMounted(() => {
   }
 
   .note-head {
-    font-size: 35px;
+    width: 26px;
+    height: 20px;
+  }
+
+  .ledger-line {
+    width: 42px;
   }
 }
 
@@ -423,7 +430,12 @@ onMounted(() => {
   }
 
   .note-head {
-    font-size: 42px;
+    width: 32px;
+    height: 24px;
+  }
+
+  .ledger-line {
+    width: 50px;
   }
 }
 
@@ -446,7 +458,12 @@ onMounted(() => {
   }
 
   .note-head {
-    font-size: 47px;
+    width: 35px;
+    height: 26px;
+  }
+
+  .ledger-line {
+    width: 55px;
   }
 }
 
@@ -470,7 +487,12 @@ onMounted(() => {
   }
 
   .note-head {
-    font-size: 30px;
+    width: 22px;
+    height: 17px;
+  }
+
+  .ledger-line {
+    width: 36px;
   }
 }
 </style>
